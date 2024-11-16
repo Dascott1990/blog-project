@@ -1,0 +1,37 @@
+{% from "bootstrap5/form.html" import render_form %}
+{% block content %}
+    {% include "header.html" %}
+
+    <!-- Page Header -->
+    <header class="masthead" style="background-image: url('../static/assets/img/register-bg.jpg')">
+      <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+          <div class="col-md-10 col-lg-8 col-xl-7">
+            <div class="page-heading">
+              <h1>Verify Your Email</h1>
+              <span class="subheading">Enter the verification code sent to your email</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="mb-4">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <!-- Rendering the verification form here -->
+            <form method="POST" novalidate>
+              {{ form.hidden_tag() }}
+              {{ render_form(form, novalidate=True, button_map={"submit": "primary"}) }}
+            </form>
+              <p>If you didn't get the code, check your spam folder. Codes can take up to 5 minutes to arrive.</p>
+              <!-- Add this to your verification page -->
+            <a href="{{ url_for('resend_verification_code') }}">Didn't get the code? Resend it.</a>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    {% include "footer.html" %}
+{% endblock %}
