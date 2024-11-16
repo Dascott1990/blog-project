@@ -18,7 +18,7 @@ import string
 from dotenv import load_dotenv
 import logging
 import ssl
-
+from flask_migrate import Migrate
 
 
 
@@ -53,6 +53,10 @@ class Base(DeclarativeBase):
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///posts.db')
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
+
+
+# Initialize Migrate
+migrate = Migrate(app, db)
 
 # CONFIGURE TABLES
 class BlogPost(db.Model):
