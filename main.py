@@ -30,7 +30,7 @@ EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
 print(f"Email: {EMAIL_ADDRESS}, Password: {EMAIL_PASSWORD}")
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '657a16140739598a5771dc736bdc01ad'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default_secret_key')
 ckeditor = CKEditor(app)
 Bootstrap5(app)
 
