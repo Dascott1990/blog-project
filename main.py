@@ -27,8 +27,6 @@ load_dotenv()
 EMAIL_ADDRESS = os.getenv("EMAIL_ADDRESS")
 EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
 
-print(f"Email: {EMAIL_ADDRESS}, Password: {EMAIL_PASSWORD}")
-
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default_secret_key')
 ckeditor = CKEditor(app)
@@ -344,4 +342,4 @@ def health_check():
     return "OK", 200
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False, host='0.0.0.0', port=5000)
