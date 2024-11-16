@@ -11,7 +11,7 @@ from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import Integer, String, Text
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
-from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm, VerificationForm
+from forms import CreatePostForm, User, RegisterForm, LoginForm, CommentForm, VerificationForm
 import smtplib
 import random
 import string
@@ -19,7 +19,7 @@ from dotenv import load_dotenv
 import logging
 import ssl
 from flask_migrate import Migrate
-
+from app import db
 
 
 # Load environment variables from .env file
@@ -179,38 +179,50 @@ def register():
 @app.route('/verify', methods=["GET", "POST"])
 def verify_email():
     form = VerificationForm()
-    if form.validate_on_submit():
-        # Check if the code entered by the user matches the code stored in the session
-        if form.verification_code.data == session.get('verification_code'):
-            flash("Email verified successfully!")
-            session.pop('verification_code', None)
+    try:
+        if form.validate_on_submit():
+            # Check if the verification code entered by the user matches the one in the session
+            verification_code = session.get('verification_code')
 
-            # Retrieve email, password, and name from session
-            email = session.get('user_email')
-            password = session.get('user_password')
-            name = session.get('user_name')  # Get the name from the session
-            password_hash = generate_password_hash(password)
+            if form.verification_code.data == verification_code:
+                flash("Email verified successfully!")
+                session.pop('verification_code', None)  # Remove the code from session once used
 
-            # Create the user in the database
-            new_user = User(
-                email=email,
-                name=name,  # Use the name from the session
-                password=password_hash
-            )
-            db.session.add(new_user)
-            db.session.commit()
-            login_user(new_user)
+                # Retrieve user details from session
+                email = session.get('user_email')
+                password = session.get('user_password')
+                name = session.get('user_name')
+                if not email or not password or not name:
+                    flash("Session expired or missing data. Please register again.")
+                    return redirect(url_for('register'))
 
-            # Clear session data after user is created
-            session.pop('user_email', None)
-            session.pop('user_password', None)
-            session.pop('user_name', None)  # Clear the name from the session
+                # Hash the password before saving it
+                password_hash = generate_password_hash(password)
 
-            return redirect(url_for('get_all_posts'))  # Redirect to homepage after successful verification
-        else:
-            flash("Invalid verification code. Please try again.")
+                # Create a new user in the database
+                new_user = User(email=email, name=name, password=password_hash)
+                db.session.add(new_user)
+                db.session.commit()
 
-    return render_template("verify.html", form=form)
+                # Log the user in
+                login_user(new_user)
+
+                # Clear session data after successful user creation
+                session.pop('user_email', None)
+                session.pop('user_password', None)
+                session.pop('user_name', None)
+
+                return redirect(url_for('get_all_posts'))  # Redirect to homepage after verification
+
+            else:
+                flash("Invalid verification code. Please try again.")
+        return render_template("verify.html", form=form)
+
+    except Exception as e:
+        # Log unexpected errors for debugging purposes
+        app.logger.error(f"Error during email verification: {str(e)}")
+        flash("An error occurred during verification. Please try again later.")
+        return redirect(url_for('register'))
 
 @app.route('/resend-verification-code', methods=["GET"])
 def resend_verification_code():
