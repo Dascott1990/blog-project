@@ -10676,9 +10676,9 @@ header.masthead {
   padding-bottom: 8rem;
   background: no-repeat center center;
   background-color: #0085A1;
-  background-size: cover;
+  background-size: contain;
   background-attachment: scroll;
-   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.2);
   border-radius: 20px;
   overflow: hidden;
 }
