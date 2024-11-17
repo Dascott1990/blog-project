@@ -18,6 +18,14 @@ from dotenv import load_dotenv
 import logging
 import ssl
 from flask_migrate import Migrate
+from flask import redirect
+
+
+
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
+def redirect_to_www(path):
+    return redirect(f"https://www.dask.com.ng/{path}", code=301)
 
 
 # Load environment variables from .env file

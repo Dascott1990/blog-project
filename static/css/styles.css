@@ -10671,13 +10671,16 @@ footer {
 
 header.masthead {
   position: relative;
-  margin-bottom: 3rem;
+  margin: 0 20px 5rem;
   padding-top: calc(8rem + 57px);
   padding-bottom: 8rem;
   background: no-repeat center center;
-  background-color: #6c757d;
-  background-size: 100%;
+  background-color: #0085A1;
+  background-size: cover;
   background-attachment: scroll;
+   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+  overflow: hidden;
 }
 header.masthead:before {
   content: "";
@@ -10688,6 +10691,7 @@ header.masthead:before {
   bottom: 0;
   background-color: #212529;
   opacity: 0.5;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 header.masthead .page-heading,
 header.masthead .post-heading,
