@@ -22,11 +22,6 @@ from flask import redirect
 
 
 
-@app.route("/", defaults={"path": ""})
-@app.route("/<path:path>")
-def redirect_to_www(path):
-    return redirect(f"https://www.dask.com.ng/{path}", code=301)
-
 
 # Load environment variables from .env file
 load_dotenv()
@@ -37,6 +32,14 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default_secret_key')
 ckeditor = CKEditor(app)
 Bootstrap5(app)
+
+
+
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
+def redirect_to_www(path):
+    return redirect(f"https://www.dask.com.ng/{path}", code=301)
+
 
 # Configure Flask-Login
 login_manager = LoginManager()
