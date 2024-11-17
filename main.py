@@ -41,7 +41,7 @@ def redirect_to_www(path):
     return redirect(f"https://www.dask.com.ng/{path}", code=301)
 
 
-# Configure Flask-Login
+# Configured Flask-Login
 login_manager = LoginManager()
 login_manager.init_app(app)
 
