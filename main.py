@@ -1,6 +1,5 @@
 import os
-from datetime import datetime
-from datetime import date
+from datetime import datetime, date
 from flask import Flask, abort, render_template, redirect, url_for, flash, request, session
 from flask_bootstrap import Bootstrap5
 from flask_ckeditor import CKEditor
@@ -19,7 +18,6 @@ from dotenv import load_dotenv
 import logging
 import ssl
 from flask_migrate import Migrate
-
 
 
 # Load environment variables from .env file
@@ -76,7 +74,7 @@ class User(UserMixin, db.Model):
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     email: Mapped[str] = mapped_column(String(100), unique=True)
-    password: Mapped[str] = mapped_column(String(100))
+    password: Mapped[str] = mapped_column(String(255))
     name: Mapped[str] = mapped_column(String(100))
     posts = relationship("BlogPost", back_populates="author")
     comments = relationship("Comment", back_populates="comment_author")
@@ -98,7 +96,7 @@ with app.app_context():
 # Flask-Login user loader
 @login_manager.user_loader
 def load_user(user_id):
-    return db.get_or_404(User, user_id)
+    return User.query.get(user_id)  # Changed this to work with Flask-Login
 
 # Admin decorator
 def admin_only(f):
@@ -128,23 +126,12 @@ def send_verification_email(user_email, verification_code):
         context = ssl.create_default_context()
         # Use SMTP_SSL directly for SSL encryption
         with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as connection:
-            connection.login(os.environ['EMAIL_ADDRESS'], os.environ['EMAIL_PASSWORD'])
-            connection.sendmail(os.environ['EMAIL_ADDRESS'], user_email, email_message)
+            connection.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            connection.sendmail(EMAIL_ADDRESS, user_email, email_message)
         print("Verification email sent successfully!")
     except Exception as e:
         logging.error(f"Error sending verification email: {e}")
 
-# Helper function to send a generic email (for contact form, etc.)
-def send_email(subject, message, to_email):
-    email_message = f"Subject:{subject}\n\n{message}"
-    try:
-        with smtplib.SMTP("smtp.gmail.com") as connection:
-            connection.starttls()
-            connection.login(os.environ['EMAIL_ADDRESS'], os.environ['EMAIL_PASSWORD'])
-            connection.sendmail(os.environ['EMAIL_ADDRESS'], to_email, email_message)
-        print(f"Email sent successfully to {to_email}")  # Success message in console
-    except Exception as e:
-        print(f"Error sending email to {to_email}: {e}")  # Error message in console
 
 @app.route('/register', methods=["GET", "POST"])
 def register():
