@@ -20,6 +20,7 @@ import ssl
 from flask_migrate import Migrate
 
 
+#heroku:dask-blog-app
 
 
 
