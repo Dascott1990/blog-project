@@ -18,6 +18,7 @@ from dotenv import load_dotenv
 import logging
 import ssl
 from flask_migrate import Migrate
+from forms import ContactForm
 
 # Load environment variables from .env file
 load_dotenv()
@@ -313,11 +314,30 @@ def about():
 
 @app.route("/contact", methods=["GET", "POST"])
 def contact():
-    if request.method == "POST":
-        data = request.form
-        send_email("Contact Form Message", data["message"], "admin@example.com")
-        return render_template("contact.html", msg_sent=True)
-    return render_template("contact.html", msg_sent=False)
+    form = ContactForm()
+    msg_sent = False
+
+    if form.validate_on_submit():
+        name = form.name.data
+        email = form.email.data
+        phone = form.phone.data
+        message = form.message.data
+
+        # Construct email message
+        email_subject = f"New Contact Form Submission from {name}"
+        email_body = f"Name: {name}\nEmail: {email}\nPhone: {phone}\n\nMessage:\n{message}"
+
+        try:
+            with smtplib.SMTP("smtp.gmail.com", 587) as server:
+                server.starttls()  # Secure the connection
+                server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)  # Login using env credentials
+                server.sendmail(EMAIL_ADDRESS, "dascottblog@gmail.com", f"Subject: {email_subject}\n\n{email_body}")
+
+            msg_sent = True
+        except Exception as e:
+            print(f"Error sending email: {e}")
+
+    return render_template("contact.html", form=form, msg_sent=msg_sent)
 
 @app.context_processor
 def inject_year():

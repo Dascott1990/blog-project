@@ -39,3 +39,10 @@ class CommentForm(FlaskForm):
 class VerificationForm(FlaskForm):
     verification_code = StringField("Enter the 6-digit Verification Code", validators=[DataRequired()])
     submit = SubmitField("Verify Code")
+
+class ContactForm(FlaskForm):
+    name = StringField("Name", validators=[DataRequired()])
+    email = StringField("Email", validators=[DataRequired(), Email()])
+    phone = StringField("Phone Number", validators=[DataRequired()])
+    message = StringField("Message", validators=[DataRequired()])
+    submit = SubmitField("Send Message")
