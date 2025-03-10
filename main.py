@@ -7,7 +7,7 @@ from flask_gravatar import Gravatar
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import Integer, String, Text
+from sqlalchemy import Integer, String, Text, ForeignKey
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm, VerificationForm
@@ -19,11 +19,6 @@ import logging
 import ssl
 from flask_migrate import Migrate
 
-
-#heroku:dask-blog-app
-
-
-
 # Load environment variables from .env file
 load_dotenv()
 EMAIL_ADDRESS = os.getenv("EMAIL_ADDRESS")
@@ -34,29 +29,26 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default_secret_key')
 ckeditor = CKEditor(app)
 Bootstrap5(app)
 
-
-# Configured Flask-Login
+# Configure Flask-Login
 login_manager = LoginManager()
 login_manager.init_app(app)
 
 # Configure Gravatar for profile images
-gravatar = Gravatar(app,
-                    size=100,
-                    rating='g',
-                    default='retro',
-                    force_default=False,
-                    force_lower=False,
-                    use_ssl=False,
-                    base_url=None)
+gravatar = Gravatar(app, size=100, rating='g', default='retro')
 
-# CREATE DATABASE
+# Fix Heroku PostgreSQL URL issue
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///posts.db")
+
+if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://")
+# Configure SQLAlchemy
 class Base(DeclarativeBase):
     pass
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///posts.db')
 db = SQLAlchemy(model_class=Base)
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
-
 
 # Initialize Migrate
 migrate = Migrate(app, db)
@@ -74,7 +66,6 @@ class BlogPost(db.Model):
     img_url: Mapped[str] = mapped_column(String(250), nullable=False)
     comments = relationship("Comment", back_populates="parent_post")
 
-
 class User(UserMixin, db.Model):
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -84,19 +75,18 @@ class User(UserMixin, db.Model):
     posts = relationship("BlogPost", back_populates="author")
     comments = relationship("Comment", back_populates="comment_author")
 
-
 class Comment(db.Model):
     __tablename__ = "comments"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     text: Mapped[str] = mapped_column(Text, nullable=False)
     author_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("users.id"))
     comment_author = relationship("User", back_populates="comments")
-    post_id: Mapped[str] = mapped_column(Integer, db.ForeignKey("blog_posts.id"))
+    post_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("blog_posts.id"))
     parent_post = relationship("BlogPost", back_populates="comments")
-
 
 with app.app_context():
     db.create_all()
+
 
 # Flask-Login user loader
 @login_manager.user_loader
