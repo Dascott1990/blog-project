@@ -89,6 +89,11 @@ with app.app_context():
     db.create_all()
 
 
+@app.route("/profile")
+def profile():
+    return render_template("profile.html")
+
+
 # Flask-Login user loader
 @login_manager.user_loader
 def load_user(user_id):
