@@ -3,39 +3,69 @@
 * Copyright 2013-2023 Start Bootstrap
 * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-clean-blog/blob/master/LICENSE)
 */
-<script>
-window.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
     let scrollPos = 0;
-    const mainNav = document.getElementById('mainNav');
-    const headerHeight = mainNav.clientHeight;
+    const mainNav = document.getElementById("mainNav");
+    const headerHeight = mainNav ? mainNav.clientHeight : 0;
 
-    window.addEventListener('scroll', function() {
+    window.addEventListener("scroll", function () {
         const currentTop = document.body.getBoundingClientRect().top * -1;
         if (currentTop < scrollPos) {
             // Scrolling Up
-            if (currentTop > 0 && mainNav.classList.contains('is-fixed')) {
-                mainNav.classList.add('is-visible');
+            if (currentTop > 0 && mainNav.classList.contains("is-fixed")) {
+                mainNav.classList.add("is-visible");
             } else {
-                console.log(123);
-                mainNav.classList.remove('is-visible', 'is-fixed');
+                mainNav.classList.remove("is-visible", "is-fixed");
             }
         } else {
             // Scrolling Down
-            mainNav.classList.remove('is-visible');  // ✅ Fixed the remove() method
-            if (currentTop > headerHeight && !mainNav.classList.contains('is-fixed')) {
-                mainNav.classList.add('is-fixed');
+            mainNav.classList.remove("is-visible");
+            if (currentTop > headerHeight && !mainNav.classList.contains("is-fixed")) {
+                mainNav.classList.add("is-fixed");
             }
         }
         scrollPos = currentTop;
     });
-});
-</script>
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
+    // Initialize Bootstrap Tooltips
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll("[data-bs-toggle='tooltip']"));
+    tooltipTriggerList.map((tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl));
+
+    // Load Theme from LocalStorage
+    const savedTheme = localStorage.getItem("theme") || "light";
+    const htmlElement = document.documentElement;
+    const themeIcon = document.getElementById("theme-icon");
+    const themeToggleBtn = document.getElementById("theme-toggle");
+
+    htmlElement.setAttribute("data-bs-theme", savedTheme);
+    if (themeIcon) {
+        themeIcon.classList.remove("fa-sun", "fa-moon");
+        themeIcon.classList.add(savedTheme === "dark" ? "fa-sun" : "fa-moon");
+    }
+
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener("click", function () {
+            toggleDarkMode();
+        });
+    }
 });
-</script>
+
+function toggleMenu() {
+    document.getElementById("profile-menu").classList.toggle("d-none");
+}
+
+// Dark Mode Toggle Function
+function toggleDarkMode() {
+    const htmlElement = document.documentElement;
+    const themeIcon = document.getElementById("theme-icon");
+
+    if (htmlElement.getAttribute("data-bs-theme") === "dark") {
+        htmlElement.setAttribute("data-bs-theme", "light");
+        localStorage.setItem("theme", "light");
+        themeIcon.classList.replace("fa-sun", "fa-moon");
+    } else {
+        htmlElement.setAttribute("data-bs-theme", "dark");
+        localStorage.setItem("theme", "dark");
+        themeIcon.classList.replace("fa-moon", "fa-sun");
+    }
+}
