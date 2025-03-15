@@ -19,6 +19,7 @@ import logging
 import ssl
 from flask_migrate import Migrate
 from forms import ContactForm
+import hashlib
 
 # Load environment variables from .env file
 load_dotenv()
@@ -89,9 +90,16 @@ with app.app_context():
     db.create_all()
 
 
-@app.route("/profile")
+@app.route('/profile')
 def profile():
-    return render_template("profile.html")
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    print(current_user)  # Debugging
+    return render_template('profile.html', user=current_user, gravatar_url=gravatar_url)
+
+def gravatar_url(email, size=80):
+    hash_email = hashlib.md5(email.strip().lower().encode()).hexdigest()
+    return f"https://www.gravatar.com/avatar/{hash_email}?s={size}&d=identicon"
 
 
 # Flask-Login user loader
