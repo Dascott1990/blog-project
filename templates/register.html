@@ -25,6 +25,16 @@
                         {{ form.hidden_tag() }}
                         {{ render_form(form, novalidate=True, button_map={"submit": "primary"}) }}
                     </form>
+
+                    <!-- Login option -->
+                    <div class="text-center mt-4">
+                        <p class="mb-3">Already have an account?</p>
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-sign-in-alt me-2"></i>
+                            Log In Here
+                        </a>
+                    </div>
+
                     <!-- Flash message for email sent -->
                     {% with messages = get_flashed_messages() %}
                         {% if messages %}
