@@ -1,0 +1,14 @@
+Verify Your Identity - Security Code
+
+Account Verification Required
+
+To protect your new account, we need to verify your email address. Please use the following security code:
+
+Verification Code: {verification_code}
+
+This one-time code ensures that you're the rightful owner of this email address.
+
+Expires in 10 minutes.
+
+Thank you for helping us keep our community secure.
+Security Team

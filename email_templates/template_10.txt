@@ -1,0 +1,14 @@
+Welcome! Verify Your Email to Get Started
+
+Welcome to Our Writing Community!
+
+We're excited to have you join our platform. To get started with writing, reading, and connecting with other creators, please verify your email:
+
+Your Verification Code: {verification_code}
+
+Enter this code to complete your registration and unlock all platform features.
+
+This code will expire in 10 minutes.
+
+Happy writing!
+The Blog Team

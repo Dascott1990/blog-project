@@ -1,0 +1,14 @@
+Email Confirmation Required
+
+Important: Confirm Your Email Address
+
+To complete your registration and start exploring our platform, please confirm your email address using this code:
+
+Confirmation Code: {verification_code}
+
+This step is required to activate your account and access all features.
+
+Security Note: This code will expire in 10 minutes.
+
+Thank you for choosing our platform!
+Blog Administration

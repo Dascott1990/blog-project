@@ -1,47 +1,103 @@
 {% include "header.html" %}
 
-<!-- Page Header-->
-<header
-  class="masthead"
-  style="background-image: url('../static/assets/img/about-bg.jpg')"
->
+<!-- Page Header -->
+<header class="masthead" style="background-image: url('../static/assets/img/about-bg.jpg'); box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.3);">
   <div class="container position-relative px-4 px-lg-5">
     <div class="row gx-4 gx-lg-5 justify-content-center">
-      <div class="col-md-10 col-lg-8 col-xl-7">
+      <div class="col-md-10 col-lg-8 col-xl-7 text-center">
         <div class="page-heading">
-          <h1>About Me</h1>
-          <span class="subheading">This is what I do.</span>
+          <h1 class="text-uppercase fw-bold" style="color: #fff; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);">About Me</h1>
+          <span class="subheading" style="color: rgba(255, 255, 255, 0.8); font-style: italic;">Sharing Stories, Insights, and Inspiration</span>
         </div>
       </div>
     </div>
   </div>
 </header>
-<!-- Main Content-->
-<main class="mb-4">
+
+<!-- Main Content -->
+<main class="mb-5">
   <div class="container px-4 px-lg-5">
     <div class="row gx-4 gx-lg-5 justify-content-center">
       <div class="col-md-10 col-lg-8 col-xl-7">
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Saepe
-          nostrum ullam eveniet pariatur voluptates odit, fuga atque ea nobis
-          sit soluta odio, adipisci quas excepturi maxime quae totam ducimus
-          consectetur?
-        </p>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eius
-          praesentium recusandae illo eaque architecto error, repellendus iusto
-          reprehenderit, doloribus, minus sunt. Numquam at quae voluptatum in
-          officia voluptas voluptatibus, minus!
-        </p>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut
-          consequuntur magnam, excepturi aliquid ex itaque esse est vero natus
-          quae optio aperiam soluta voluptatibus corporis atque iste neque sit
-          tempora!
-        </p>
+        <div class="about-box p-4 rounded shadow-lg bg-light">
+          <h2 class="section-heading text-primary">My Journey</h2>
+          <p class="lead">
+            Welcome to my world! I’m a passionate <strong>writer, developer, and explorer</strong> who believes in the power of words and technology to inspire change.
+            My journey began with a simple curiosity for coding and storytelling, which has evolved into a lifelong pursuit of learning and sharing knowledge.
+          </p>
+        </div>
+
+        <div class="about-box p-4 mt-4 rounded shadow-lg bg-light">
+          <h2 class="section-heading text-primary">Why This Blog?</h2>
+          <p>
+            This blog is more than just a collection of posts; it’s a reflection of my thoughts, experiences, and discoveries.
+            Here, you’ll find a mix of <em>tech insights, personal development tips, and inspiring stories</em>.
+            My goal is to build a community where ideas are shared, and creativity thrives.
+          </p>
+        </div>
+
+        <div class="about-box p-4 mt-4 rounded shadow-lg bg-light">
+          <h2 class="section-heading text-primary">What You Can Expect</h2>
+          <ul class="list-unstyled">
+            <li><i class="fas fa-check-circle text-success"></i> In-depth articles on technology, coding, and web development.</li>
+            <li><i class="fas fa-check-circle text-success"></i> Real-life experiences and lessons learned from my journey.</li>
+            <li><i class="fas fa-check-circle text-success"></i> Motivational insights to help you grow personally and professionally.</li>
+            <li><i class="fas fa-check-circle text-success"></i> A space where we can connect, learn, and inspire each other.</li>
+          </ul>
+        </div>
+
+        <div class="about-box p-4 mt-4 rounded shadow-lg bg-light text-center">
+          <h2 class="section-heading text-primary">Let's Connect!</h2>
+          <p>
+            I love engaging with my readers! Feel free to reach out via comments, emails, or social media.
+            Let’s <span class="fw-bold">build something amazing together</span>.
+          </p>
+        </div>
       </div>
     </div>
   </div>
+
+  <nav class="d-flex justify-content-around align-items-center bg-white border-top shadow-sm position-fixed w-100"
+    style="bottom: 0; left: 0; padding: 10px 0; z-index: 1000;">
+
+    <a href="{{ url_for('get_all_posts') }}" class="text-dark fs-4">
+        <i class="fas fa-home"></i>
+    </a>
+
+    <a href="#" class="text-dark fs-4">
+        <i class="fas fa-bell"></i>
+    </a>
+<!--# ONCE USER CLICK ON THIS PROFILE ICON, I WANT IT TO SHOW THE USER EMAIL, USER NAME, DISPLAY AS HAMBURGER AND USER GRAVATAR AS PROFILE PICTURE-->
+    <a href="{{ url_for('profile') }}" class="text-dark fs-4">
+        <i class="fas fa-user"></i>
+    </a>
+</nav>
 </main>
 
 {% include "footer.html" %}
+
+<style>
+  .about-box {
+    background: #fff;
+    border-left: 5px solid #1484bc;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+  }
+
+  .about-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .section-heading {
+    font-size: 1.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+  }
+
+  .lead {
+    font-size: 1.2rem;
+    line-height: 1.6;
+  }
+</style>

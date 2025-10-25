@@ -1,0 +1,14 @@
+Welcome! Final Step: Email Verification
+
+Welcome to Our Blog Community!
+
+You're just one step away from joining our vibrant community of writers and readers. Please use the code below to verify your email:
+
+Verification Code: {verification_code}
+
+This quick verification helps us ensure that our community remains authentic and secure.
+
+Code expires in 10 minutes.
+
+We're excited to have you!
+The Blog Team

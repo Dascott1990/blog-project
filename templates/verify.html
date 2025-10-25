@@ -31,6 +31,14 @@
           </div>
         </div>
       </div>
+
+        <nav class="d-flex justify-content-around align-items-center bg-white border-top shadow-sm position-fixed w-100"
+    style="bottom: 0; left: 0; padding: 10px 0; z-index: 1000;">
+
+    <a href="{{ url_for('get_all_posts') }}" class="text-dark fs-4">
+        <i class="fas fa-home"></i>
+    </a>
+</nav>
     </main>
 
     {% include "footer.html" %}

@@ -79,6 +79,40 @@
   --bs-highlight-bg: #fff3cd;
 }
 
+
+[data-bs-theme="dark"] {
+  --bs-body-bg: #121212;
+  --bs-body-color: #ffffff;
+  --bs-link-color: #0dcaf0;
+  --bs-link-hover-color: #ffc107;
+  --bs-border-color: #6c757d;
+  --bs-primary: #0dcaf0;
+  --bs-secondary: #adb5bd;
+  --bs-success: #198754;
+  --bs-info: #17a2b8;
+  --bs-warning: #ffc107;
+  --bs-danger: #dc3545;
+  --bs-light: #343a40;
+  --bs-dark: #ffffff;
+
+  /* Adjust additional Bootstrap colors */
+  --bs-gray-100: #1e1e1e;
+  --bs-gray-200: #2c2c2c;
+  --bs-gray-300: #3b3b3b;
+  --bs-gray-400: #4a4a4a;
+  --bs-gray-500: #6c757d;
+  --bs-gray-600: #adb5bd;
+  --bs-gray-700: #ced4da;
+  --bs-gray-800: #dee2e6;
+  --bs-gray-900: #f8f9fa;
+
+  /* Button Colors */
+  --bs-btn-bg: var(--bs-primary);
+  --bs-btn-border-color: var(--bs-primary);
+  --bs-btn-hover-bg: var(--bs-link-hover-color);
+}
+
+
 *,
 *::before,
 *::after {
@@ -10861,43 +10895,3 @@ header.masthead .post-heading .meta a {
 
 
 /* MY DESIGN */
-
-.container {
-  background: rgba(255, 255, 255, 0.3); /* Semi-transparent white */
-  backdrop-filter: blur(10px); /* Blurs the background */
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Subtle falling shadow */
-  border-radius: 10px; /* Rounded corners */
-  padding: 20px; /* Space inside the container */
-  margin: 20px auto; /* Center align with margin */
-  max-width: 800px; /* Set a maximum width */
-}
-
-.site-heading {
-  text-align: center; /* Center align the content */
-  color: #fff; /* White text for visibility */
-  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5); /* Adds depth to text */
-}
-
-.site-heading h1 {
-  font-size: 3rem;
-  margin-bottom: 10px;
-}
-
-.site-heading .subheading {
-  font-size: 1.2rem;
-  font-style: italic;
-  color: #f0f0f0; /* Slightly lighter text for the subheading */
-}
-
-.subheading {
-  display: inline-block; /* Makes the span behave like a block element for styling */
-  background: rgba(255, 255, 255, 0.1); /* Very light transparent background */
-  backdrop-filter: blur(5px); /* Adds a subtle blur effect to the background */
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1); /* Creates a falling shadow effect */
-  border-radius: 8px; /* Rounded corners for a soft look */
-  padding: 10px 20px; /* Adds spacing inside the box */
-  margin-top: 10px; /* Space above the subheading */
-  color: #fff; /* White text for visibility */
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3); /* Subtle shadow for the text */
-  font-style: italic; /* Keeps the original italic style */
-}

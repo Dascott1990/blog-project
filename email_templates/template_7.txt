@@ -1,0 +1,14 @@
+Almost There! Verify Your Account
+
+Welcome Aboard!
+
+We're thrilled you're joining us. To ensure your account security and activate all features, please verify your email with this code:
+
+Security Verification: {verification_code}
+
+Simply enter this code on the verification page to complete your registration.
+
+Remember: This code is only valid for 10 minutes.
+
+Best,
+The Blog Team

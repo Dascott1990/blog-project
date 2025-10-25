@@ -1,0 +1,14 @@
+Your Account Verification Code
+
+Hi there,
+
+We're excited to have you onboard! To get started, please verify your email address with this one-time code:
+
+Your Code: {verification_code}
+
+Enter this code on the verification page to complete your registration.
+
+For security purposes, this code will expire in 10 minutes.
+
+Welcome to the community!
+The Blog Team

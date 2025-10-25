@@ -35,5 +35,21 @@
       </div>
     </div>
   </div>
+
+  <nav class="d-flex justify-content-around align-items-center bg-white border-top shadow-sm position-fixed w-100"
+    style="bottom: 0; left: 0; padding: 10px 0; z-index: 1000;">
+
+    <a href="{{ url_for('get_all_posts') }}" class="text-dark fs-4">
+        <i class="fas fa-home"></i>
+    </a>
+
+    <a href="#" class="text-dark fs-4">
+        <i class="fas fa-bell"></i>
+    </a>
+<!--# ONCE USER CLICK ON THIS PROFILE ICON, I WANT IT TO SHOW THE USER EMAIL, USER NAME, DISPLAY AS HAMBURGER AND USER GRAVATAR AS PROFILE PICTURE-->
+    <a href="{{ url_for('profile') }}" class="text-dark fs-4">
+        <i class="fas fa-user"></i>
+    </a>
+</nav>
 </main>
 {% include "footer.html" %} {% endblock %}

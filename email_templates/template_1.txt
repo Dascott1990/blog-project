@@ -1,0 +1,14 @@
+Complete Your Registration - Verification Code Inside
+
+Dear User,
+
+Welcome to our community! To complete your registration and ensure the security of your account, please use the verification code below:
+
+Verification Code: {verification_code}
+
+This code will expire in 10 minutes for security reasons.
+
+If you did not request this code, please ignore this email.
+
+Best regards,
+The Blog Team

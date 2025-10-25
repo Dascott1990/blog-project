@@ -1,0 +1,14 @@
+Action Required: Verify Your Email Address
+
+Hello!
+
+Thank you for joining us. To activate your account and access all features, please verify your email address using this code:
+
+Security Code: {verification_code}
+
+This verification step helps us maintain a secure environment for all our users.
+
+The code is valid for the next 10 minutes.
+
+Sincerely,
+Blog Platform Security Team

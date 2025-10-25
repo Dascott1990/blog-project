@@ -1,0 +1,14 @@
+Account Activation Code
+
+Action Required: Activate Your Account
+
+Your registration is almost complete! Use the code below to activate your account and start your journey with us:
+
+Activation Code: {verification_code}
+
+This verification process helps us maintain a safe and trusted community.
+
+Code validity: 10 minutes
+
+We look forward to seeing you on the platform!
+Blog Team

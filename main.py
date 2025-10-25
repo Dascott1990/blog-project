@@ -18,10 +18,10 @@ from dotenv import load_dotenv
 import logging
 import ssl
 from flask_migrate import Migrate
-
-
-
-
+from forms import ContactForm
+import hashlib
+import time
+import glob
 
 # Load environment variables from .env file
 load_dotenv()
@@ -32,7 +32,6 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default_secret_key')
 ckeditor = CKEditor(app)
 Bootstrap5(app)
-
 
 # Configured Flask-Login
 login_manager = LoginManager()
@@ -48,17 +47,22 @@ gravatar = Gravatar(app,
                     use_ssl=False,
                     base_url=None)
 
+
 # CREATE DATABASE
 class Base(DeclarativeBase):
     pass
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///posts.db')
+
+# Use SQLite database - this will preserve your existing data
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 
-
 # Initialize Migrate
 migrate = Migrate(app, db)
+
 
 # CONFIGURE TABLES
 class BlogPost(db.Model):
@@ -97,10 +101,24 @@ class Comment(db.Model):
 with app.app_context():
     db.create_all()
 
+
+@app.route('/profile')
+def profile():
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    return render_template('profile.html', user=current_user, gravatar_url=gravatar_url)
+
+
+def gravatar_url(email, size=80):
+    hash_email = hashlib.md5(email.strip().lower().encode()).hexdigest()
+    return f"https://www.gravatar.com/avatar/{hash_email}?s={size}&d=identicon"
+
+
 # Flask-Login user loader
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(user_id)  # Changed this to work with Flask-Login
+    return User.query.get(user_id)
+
 
 # Admin decorator
 def admin_only(f):
@@ -109,32 +127,76 @@ def admin_only(f):
         if current_user.id != 1:
             return abort(403)
         return f(*args, **kwargs)
+
     return decorated_function
+
 
 # Helper function to generate a 6-digit verification code
 def generate_verification_code():
     return ''.join(random.choices(string.digits, k=6))
 
+
+def load_email_templates():
+    """Load email templates from text files"""
+    templates = []
+    template_files = glob.glob('email_templates/template_*.txt')
+
+    if not template_files:
+        logging.warning("No email template files found. Using fallback template.")
+        return [{
+            "subject": "Verification Code Required",
+            "body": "Your verification code is: {verification_code}\n\nThis code expires in 10 minutes."
+        }]
+
+    for file_path in template_files:
+        try:
+            with open(file_path, 'r', encoding='utf-8') as file:
+                content = file.read().strip()
+                # Split subject and body (first line is subject, rest is body)
+                lines = content.split('\n')
+                subject = lines[0].strip()
+                body = '\n'.join(lines[1:]).strip()
+
+                templates.append({
+                    "subject": subject,
+                    "body": body
+                })
+        except Exception as e:
+            logging.error(f"Error loading email template {file_path}: {e}")
+
+    return templates
+
+
 def send_verification_email(user_email, verification_code):
-    email_message = f"""
-    Subject: Email Verification Code
+    # Load templates dynamically
+    templates = load_email_templates()
 
-    We sent an email with a verification code to {user_email}.
-    Enter it below to confirm your email.
+    if not templates:
+        logging.error("No email templates available")
+        return False
 
-    Verification code: {verification_code}
+    # Select a random template for variety across 21,000+ users
+    template = random.choice(templates)
 
-    A verification code is required.
-    """
+    email_message = f"""Subject: {template['subject']}
+
+{template['body'].format(verification_code=verification_code)}
+
+---
+This is an automated message. Please do not reply to this email.
+For support, contact our help desk at dascottblog@gmail.com
+"""
+
     try:
         context = ssl.create_default_context()
-        # Use SMTP_SSL directly for SSL encryption
         with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as connection:
             connection.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
             connection.sendmail(EMAIL_ADDRESS, user_email, email_message)
-        print("Verification email sent successfully!")
+        print(f"Verification email sent successfully to {user_email}!")
+        return True
     except Exception as e:
-        logging.error(f"Error sending verification email: {e}")
+        logging.error(f"Error sending verification email to {user_email}: {e}")
+        return False
 
 
 @app.route('/register', methods=["GET", "POST"])
@@ -151,41 +213,61 @@ def register():
         # Store email, password, and name in session
         session['user_email'] = form.email.data
         session['user_password'] = form.password.data
-        session['user_name'] = form.name.data  # Store the name in the session
+        session['user_name'] = form.name.data
+        session['registration_time'] = time.time()
 
         # Generate the 6-digit verification code
         verification_code = generate_verification_code()
-
-        # Store the verification code in the session
         session['verification_code'] = verification_code
+        session['verification_attempts'] = 0
 
         # Send the verification email to the user's email
-        send_verification_email(form.email.data, verification_code)
-
-        # Redirect to the verification page
-        return redirect(url_for('verify_email'))  # Redirecting to verify page
+        if send_verification_email(form.email.data, verification_code):
+            flash("A verification code has been sent to your email. Please check your inbox.")
+            return redirect(url_for('verify_email'))
+        else:
+            flash("Failed to send verification email. Please try again.")
+            return redirect(url_for('register'))
 
     return render_template("register.html", form=form, current_user=current_user)
+
 
 @app.route('/verify', methods=["GET", "POST"])
 def verify_email():
     form = VerificationForm()
+
+    # Check if verification code has expired (10 minutes)
+    registration_time = session.get('registration_time')
+    if registration_time and time.time() - registration_time > 600:  # 10 minutes
+        flash("Verification code has expired. Please register again.")
+        session.clear()
+        return redirect(url_for('register'))
+
     if form.validate_on_submit():
-        # Check if the code entered by the user matches the code stored in the session
+        verification_attempts = session.get('verification_attempts', 0) + 1
+        session['verification_attempts'] = verification_attempts
+
+        if verification_attempts > 5:
+            flash("Too many failed attempts. Please register again.")
+            session.clear()
+            return redirect(url_for('register'))
+
         if form.verification_code.data == session.get('verification_code'):
-            flash("Email verified successfully!")
+            flash("Email verified successfully! Welcome to our community.")
             session.pop('verification_code', None)
+            session.pop('verification_attempts', None)
+            session.pop('registration_time', None)
 
             # Retrieve email, password, and name from session
             email = session.get('user_email')
             password = session.get('user_password')
-            name = session.get('user_name')  # Get the name from the session
+            name = session.get('user_name')
             password_hash = generate_password_hash(password)
 
             # Create the user in the database
             new_user = User(
                 email=email,
-                name=name,  # Use the name from the session
+                name=name,
                 password=password_hash
             )
             db.session.add(new_user)
@@ -195,24 +277,37 @@ def verify_email():
             # Clear session data after user is created
             session.pop('user_email', None)
             session.pop('user_password', None)
-            session.pop('user_name', None)  # Clear the name from the session
+            session.pop('user_name', None)
 
-            return redirect(url_for('get_all_posts'))  # Redirect to homepage after successful verification
+            return redirect(url_for('get_all_posts'))
         else:
-            flash("Invalid verification code. Please try again.")
+            remaining_attempts = 5 - verification_attempts
+            flash(f"Invalid verification code. {remaining_attempts} attempts remaining.")
 
     return render_template("verify.html", form=form)
+
 
 @app.route('/resend-verification-code', methods=["GET"])
 def resend_verification_code():
     if 'user_email' in session:
+        # Check if we can resend (prevent spam)
+        last_resend = session.get('last_resend_time', 0)
+        if time.time() - last_resend < 60:  # 1 minute cooldown
+            flash("Please wait a moment before requesting a new code.")
+            return redirect(url_for('verify_email'))
+
         verification_code = generate_verification_code()
         session['verification_code'] = verification_code
-        send_verification_email(session['user_email'], verification_code)
-        flash("A new verification code has been sent to your email.")
+        session['last_resend_time'] = time.time()
+
+        if send_verification_email(session['user_email'], verification_code):
+            flash("A new verification code has been sent to your email.")
+        else:
+            flash("Failed to send verification code. Please try again.")
         return redirect(url_for('verify_email'))
     flash("No email found in session.")
     return redirect(url_for('register'))
+
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
@@ -229,6 +324,7 @@ def login():
             return redirect(url_for('login'))
         else:
             login_user(user)
+            flash(f"Welcome back, {user.name}!")
             return redirect(url_for('get_all_posts'))
 
     return render_template("login.html", form=form, current_user=current_user)
@@ -237,6 +333,7 @@ def login():
 @app.route('/logout')
 def logout():
     logout_user()
+    flash("You have been logged out successfully.")
     return redirect(url_for('get_all_posts'))
 
 
@@ -263,6 +360,7 @@ def show_post(post_id):
         )
         db.session.add(new_comment)
         db.session.commit()
+        flash("Comment added successfully!")
     return render_template("post.html", post=requested_post, current_user=current_user, form=comment_form)
 
 
@@ -281,6 +379,7 @@ def add_new_post():
         )
         db.session.add(new_post)
         db.session.commit()
+        flash("Post created successfully!")
         return redirect(url_for("get_all_posts"))
     return render_template("make-post.html", form=form, current_user=current_user)
 
@@ -302,6 +401,7 @@ def edit_post(post_id):
         post.author = current_user
         post.body = edit_form.body.data
         db.session.commit()
+        flash("Post updated successfully!")
         return redirect(url_for("show_post", post_id=post.id))
     return render_template("make-post.html", form=edit_form, is_edit=True, current_user=current_user)
 
@@ -312,6 +412,7 @@ def delete_post(post_id):
     post_to_delete = db.get_or_404(BlogPost, post_id)
     db.session.delete(post_to_delete)
     db.session.commit()
+    flash("Post deleted successfully!")
     return redirect(url_for('get_all_posts'))
 
 
@@ -322,19 +423,42 @@ def about():
 
 @app.route("/contact", methods=["GET", "POST"])
 def contact():
-    if request.method == "POST":
-        data = request.form
-        send_email("Contact Form Message", data["message"], "admin@example.com")
-        return render_template("contact.html", msg_sent=True)
-    return render_template("contact.html", msg_sent=False)
+    form = ContactForm()
+    msg_sent = False
+
+    if form.validate_on_submit():
+        name = form.name.data
+        email = form.email.data
+        phone = form.phone.data
+        message = form.message.data
+
+        # Construct email message
+        email_subject = f"New Contact Form Submission from {name}"
+        email_body = f"Name: {name}\nEmail: {email}\nPhone: {phone}\n\nMessage:\n{message}"
+
+        try:
+            with smtplib.SMTP("smtp.gmail.com", 587) as server:
+                server.starttls()
+                server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+                server.sendmail(EMAIL_ADDRESS, "dascottblog@gmail.com", f"Subject: {email_subject}\n\n{email_body}")
+            msg_sent = True
+            flash("Your message has been sent successfully!")
+        except Exception as e:
+            print(f"Error sending email: {e}")
+            flash("Sorry, there was an error sending your message. Please try again.")
+
+    return render_template("contact.html", form=form, msg_sent=msg_sent)
+
 
 @app.context_processor
 def inject_year():
     return {'current_year': datetime.now().year}
 
+
 @app.route('/healthz')
 def health_check():
     return "OK", 200
+
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)
