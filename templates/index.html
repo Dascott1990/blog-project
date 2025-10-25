@@ -27,42 +27,7 @@
           <h2 class="post-title">{{ post.title }}</h2>
           <h3 class="post-subtitle">{{ post.subtitle }}</h3>
         </a>
-<!--                       I WANT TO ADD ICON OF LOVE 'LIKE', COMMENT ICON, SHARE ICON AND THEN BOOKMARK ICON, JUST LIKE INSTAGRAM..-->
-
-           <!-- Action Icons (Like, Comment, Share, Bookmark) -->
-<div class="d-flex justify-content-start align-items-center gap-3 py-2">
-    <!-- Like Button -->
-<!--    # ONCE USER CLICKED ON LIKE BUTTON, I WANT THE NUMBER OF EACH LIKE INCREASE BY ONE. AND IT SHOULD BE SHOWN TO ALL USERS USING THE WEBSITE OF HOW MANY LIKES THAT PARTICULAR POST HAS HAD, COLOR OF THE HEART ICON TURN RED, ONLY TO USER WHO LIKED THE POST, JUST INSTAGRAM LIKE BUTTON-->
-    <a href="#" class="text-dark d-flex align-items-center justify-content-center rounded-circle p-2"
-       data-bs-toggle="tooltip" data-bs-placement="top" title="Like">
-        <i class="fas fa-heart fs-4"></i>
-    </a>
-
-    <!-- Comment Button -->
-    <a href="#" class="text-dark d-flex align-items-center justify-content-center rounded-circle p-2"
-       data-bs-toggle="tooltip" data-bs-placement="top" title="Comment">
-        <i class="fas fa-comment fs-4"></i>
-    </a>
-
-    <!-- Share Button -->
-    <a href="#" class="text-dark d-flex align-items-center justify-content-center rounded-circle p-2"
-       data-bs-toggle="tooltip" data-bs-placement="top" title="Share">
-        <i class="fas fa-share fs-4"></i>
-    </a>
-
-    <!-- Bookmark Button (with extra space) -->
-    <a href="#" class="text-dark d-flex align-items-center justify-content-center rounded-circle p-2 ms-auto"
-       data-bs-toggle="tooltip" data-bs-placement="top" title="Bookmark">
-        <i class="fas fa-bookmark fs-4"></i>
-    </a>
-</div>
-
-
-<!-- Divider-->
-<hr class="my-4" />
         <p class="post-meta">
-
-
           Posted by
           <!-- post.author.name is now a User object -->
           <a href="#">{{post.author.name}}</a>
@@ -97,29 +62,4 @@
   </div>
 </div>
 
-
-
-</div>
-
-<!-- Bottom Navigation Bar -->
-<nav class="d-flex justify-content-around align-items-center bg-white border-top shadow-sm position-fixed w-100"
-    style="bottom: 0; left: 0; padding: 10px 0; z-index: 1000;">
-
-    <a href="{{ url_for('get_all_posts') }}" class="text-dark fs-4">
-        <i class="fas fa-home"></i>
-    </a>
-
-    <a href="#" class="text-dark fs-4">
-        <i class="fas fa-search"></i>
-    </a>
-
-    <a href="#" class="text-dark fs-4">
-        <i class="fas fa-bell"></i>
-    </a>
-    <a href="{{ url_for('profile') }}" class="text-dark fs-4">
-        <i class="fas fa-user"></i>
-    </a>
-</nav>
-
 {% include "footer.html" %}
-
